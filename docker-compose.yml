@@ -1,0 +1,44 @@
+services:
+  mediamtx:
+    image: bluenviron/mediamtx:latest
+    container_name: mediamtx
+    restart: unless-stopped
+    volumes:
+      - ./config/mediamtx.yml:/mediamtx.yml
+    environment:
+      - MTX_PATHS_CAM01_SOURCE=${CAM01_SOURCE}
+      - MTX_PATHS_CAM02_SOURCE=${CAM02_SOURCE}
+      - MTX_PATHS_CAM03_SOURCE=${CAM03_SOURCE}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.mediamtx-cam01.rule=Host(`cam01.wenger.dev`)
+      - traefik.http.routers.mediamtx-cam01.entryPoints=https
+      - traefik.http.routers.mediamtx-cam01.tls=true
+      - traefik.http.routers.mediamtx-cam01.tls.certresolver=cloudflare
+      - traefik.http.routers.mediamtx-cam01.service=mediamtx-cam01
+      - traefik.http.services.mediamtx-cam01.loadbalancer.server.port=8888
+      - traefik.http.middlewares.mediamtx-cam01.addprefix.prefix=/cam01
+      - traefik.http.routers.mediamtx-cam01.middlewares=authelia@docker,mediamtx-cam01
+
+      - traefik.http.routers.mediamtx-cam02.rule=Host(`cam02.wenger.dev`)
+      - traefik.http.routers.mediamtx-cam02.entryPoints=https
+      - traefik.http.routers.mediamtx-cam02.tls=true
+      - traefik.http.routers.mediamtx-cam02.tls.certresolver=cloudflare
+      - traefik.http.routers.mediamtx-cam02.service=mediamtx-cam02
+      - traefik.http.services.mediamtx-cam02.loadbalancer.server.port=8888
+      - traefik.http.middlewares.mediamtx-cam02.addprefix.prefix=/cam02
+      - traefik.http.routers.mediamtx-cam02.middlewares=authelia@docker,mediamtx-cam02
+
+      - traefik.http.routers.mediamtx-cam03.rule=Host(`cam03.wenger.dev`)
+      - traefik.http.routers.mediamtx-cam03.entryPoints=https
+      - traefik.http.routers.mediamtx-cam03.tls=true
+      - traefik.http.routers.mediamtx-cam03.tls.certresolver=cloudflare
+      - traefik.http.routers.mediamtx-cam03.service=mediamtx-cam03
+      - traefik.http.services.mediamtx-cam03.loadbalancer.server.port=8888
+      - traefik.http.middlewares.mediamtx-cam03.addprefix.prefix=/cam03
+      - traefik.http.routers.mediamtx-cam03.middlewares=authelia@docker,mediamtx-cam03
+
+networks:
+  default:
+    external: true
+    name: private
