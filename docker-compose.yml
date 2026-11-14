@@ -41,6 +41,22 @@ services:
       - traefik.http.middlewares.mediamtx-cam03.replacepathregex.replacement=/cam03/$$1
       - traefik.http.routers.mediamtx-cam03.middlewares=authelia@docker,mediamtx-cam03
 
+      - traefik.http.routers.mediamtx-moq.rule=Host(`cams.wenger.dev`)
+      - traefik.http.routers.mediamtx-moq.entryPoints=https
+      - traefik.http.routers.mediamtx-moq.tls=true
+      - traefik.http.routers.mediamtx-moq.tls.certresolver=cloudflare
+      - traefik.http.routers.mediamtx-moq.service=mediamtx-moq
+      - traefik.http.services.mediamtx-moq.loadbalancer.server.port=8892
+      - traefik.http.services.mediamtx-moq.loadbalancer.server.scheme=https
+      - traefik.http.middlewares.mediamtx-moq-root.redirectregex.regex=^https://cams\.wenger\.dev/$$
+      - traefik.http.middlewares.mediamtx-moq-root.redirectregex.replacement=https://cams.wenger.dev/cam01/
+      - traefik.http.middlewares.mediamtx-moq-root.redirectregex.permanent=true
+      - traefik.http.routers.mediamtx-moq.middlewares=mediamtx-moq-root
+
+      - traefik.udp.routers.mediamtx-moq.entryPoints=https-udp
+      - traefik.udp.routers.mediamtx-moq.service=mediamtx-moq-udp
+      - traefik.udp.services.mediamtx-moq-udp.loadbalancer.server.port=8892
+
 networks:
   default:
     external: true
